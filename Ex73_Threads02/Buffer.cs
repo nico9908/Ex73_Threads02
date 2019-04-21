@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ex73_Threads02
@@ -9,9 +10,9 @@ namespace Ex73_Threads02
     class Buffer
     {
         private Queue<Car> bufferData;
-        private int capacity;
+        private readonly int capacity;
 
-        private object bufferLock = new object();
+        private readonly object bufferLock = new object();
 
         public Buffer(int capacity)
         {
@@ -21,20 +22,32 @@ namespace Ex73_Threads02
 
         public void Put(Car car)
         {
-            bufferData.Enqueue(car);
-            if (bufferData.Count > capacity)
+            lock (bufferLock)
             {
-                throw new System.ArgumentException("Køen er fuld");
+                if (IsFull())
+                {
+                    Monitor.Wait(bufferLock);
+                    //throw new System.ArgumentException("Køen er fuld");
+                }
+                bufferData.Enqueue(car);
+                Monitor.Pulse(bufferLock);
             }
         }
-
         public Car Get()
         {
-            Car car;
-            car = bufferData.Dequeue();
-            return car;
+            lock (bufferLock)
+            {
+                Car car = null;
+                if (IsEmpty())
+                {
+                    Monitor.Wait(bufferLock);
+                    //throw new System.ArgumentException("Køen er tom");
+                }
+                car = bufferData.Dequeue();
+                Monitor.Pulse(bufferLock);
+                return car;
+            }
         }
-
         public bool IsEmpty()
         {
             bool isempty;

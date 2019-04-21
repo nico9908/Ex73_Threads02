@@ -115,9 +115,9 @@ namespace Ex73_Threads02
         static void Main(string[] args)
         {
             Program myprogram = new Program();
-            myprogram.run();
+            myprogram.Run();
         }
-        public void run()
+        public void Run()
         {
             Console.WriteLine("Start");
 

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ex73_Threads02
 {
     class Consumer
     {
-        private string name;
+        private readonly string name;
         private bool stop = false;
         private Buffer buffer;
 
